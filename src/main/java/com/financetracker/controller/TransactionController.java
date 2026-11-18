@@ -1,7 +1,7 @@
 package com.financetracker.controller;
 
 import com.financetracker.model.Transaction;
-import com.financetracker.repository.TransactionRepository;
+import com.financetracker.service.TransactionService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -12,29 +12,30 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-    private final TransactionRepository repository;
+    private final TransactionService service;
 
-    public TransactionController(TransactionRepository repository) {
-        this.repository = repository;
+    public TransactionController(TransactionService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<Transaction> list() {
-        return repository.findAll();
+        return service.findAll();
+    }
+
+    @GetMapping("/summary")
+    public TransactionService.Summary summary() {
+        return service.summarize();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Transaction create(@Valid @RequestBody Transaction transaction) {
-        return repository.save(transaction);
+        return service.save(transaction);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return service.delete(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
