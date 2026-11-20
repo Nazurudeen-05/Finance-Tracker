@@ -1,324 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Finance Tracker</title>
-<style>
-:root{--bg:#f4f6fa;--card:#fff;--ink:#14233b;--mute:#66758c;--line:#e2e8f0;--nav:#0f2747;--acc:#0e9f8e;--in:#0f9d6b;--out:#d1435b;--field:#f8fafc;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#0c1424;--card:#131d33;--ink:#e6edf7;--mute:#8fa0b8;--line:#23304a;--nav:#0a1020;--acc:#2fc9b6;--in:#4fd1a5;--out:#ff7a8a;--field:#0f1829;color-scheme:dark}}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
-h1,h2,h3{margin:0}h2{font-size:1.1rem}h3{font-size:.95rem}
-.num{font-variant-numeric:tabular-nums}
-button,input,select{font:inherit;color:inherit}
-input,select{padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--field);width:100%}
-:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.btn{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600}
-.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn:hover{filter:brightness(.97)}
-label{display:grid;gap:5px;font-size:.84rem;color:var(--mute)}
-/* auth */
-#auth{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
-.brandp{background:var(--nav);color:#e8eefb;padding:56px;display:flex;flex-direction:column;justify-content:center;gap:18px}
-.brandp h1{font:600 2.2rem/1.2 Georgia,serif}.brandp p{margin:0;color:#a9b8d4;max-width:38ch}
-.brandp ul{margin:8px 0 0;padding-left:18px;color:#a9b8d4}
-.formp{display:grid;place-content:center;padding:32px}
-.authbox{width:min(380px,86vw);display:grid;gap:14px}
-.tabs2{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
-.tabs2 button{background:none;border:0;border-bottom:3px solid transparent;padding:10px;font-weight:600;color:var(--mute);cursor:pointer}
-.tabs2 button[aria-selected=true]{color:var(--ink);border-color:var(--acc)}
-.note{font-size:.8rem;color:var(--mute);margin:0}.err{color:var(--out);font-size:.85rem;min-height:1.3em;margin:0}
-/* shell */
-.top{background:var(--nav);color:#fff}
-.bar{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:24px;min-height:58px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700}
-.logo{width:30px;height:30px;border-radius:8px;background:var(--acc);display:grid;place-content:center;font-weight:800}
-#tabs{display:flex;gap:4px;flex:1;overflow-x:auto}
-#tabs button{background:none;border:0;color:#a9b8d4;padding:17px 14px 14px;border-bottom:3px solid transparent;cursor:pointer;font-weight:600;white-space:nowrap}
-#tabs button[aria-selected=true]{color:#fff;border-color:var(--acc)}
-.user{display:flex;align-items:center;gap:12px;font-size:.9rem;color:#cbd6ec}
-.user .btn{background:transparent;color:#fff;border-color:#3a557f;padding:5px 12px}
-main{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
-.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
-.head p{margin:2px 0 0;color:var(--mute)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
-.kpi small{color:var(--mute)}.kpi b{display:block;font-size:1.7rem;margin-top:2px}
-.two{display:grid;grid-template-columns:1fr 1.3fr;gap:16px}
-.chart{display:flex;align-items:center;gap:18px;margin-top:14px}
-.donut{position:relative;width:140px;height:140px;flex:none}.donut svg{width:100%;height:100%}
-.donut div{position:absolute;inset:0;display:grid;place-content:center;text-align:center;font-size:.85rem;color:var(--mute)}
-.donut b{color:var(--ink);font-size:1rem}
-.anim .seg{animation:draw .9s ease-out both}@keyframes draw{from{stroke-dasharray:0 100}}
-.legend{list-style:none;margin:0;padding:0;display:grid;gap:6px;flex:1;min-width:0;font-size:.9rem}
-.legend li{display:flex;gap:8px;align-items:center}.legend i{width:10px;height:10px;border-radius:3px;flex:none}
-.legend em{margin-left:auto;font-style:normal;color:var(--mute)}
-.mute{color:var(--mute)}
-.tools{display:grid;grid-template-columns:2fr 1fr 1fr auto auto;gap:10px;margin-bottom:14px}
-.tw{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
-thead th{background:var(--field);font-size:.82rem;color:var(--mute);font-weight:600}
-thead th button{all:unset;cursor:pointer}
-td.r,th.r{text-align:right}
-tbody tr:hover{background:var(--field)}
-.badge{font-size:.78rem;font-weight:600;padding:2px 9px;border-radius:999px}
-.badge.i{background:color-mix(in srgb,var(--in) 16%,transparent);color:var(--in)}
-.badge.o{background:color-mix(in srgb,var(--out) 16%,transparent);color:var(--out)}
-.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:8px}
-.i{color:var(--in)}.o{color:var(--out)}
-.lnk{background:none;border:0;color:var(--out);cursor:pointer;padding:2px 6px}
-.empty{text-align:center;color:var(--mute);padding:28px}
-.bar2{height:8px;border-radius:4px;background:var(--line);min-width:120px}.bar2 span{display:block;height:100%;border-radius:4px;background:var(--acc)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.about p,.about li{color:var(--mute);max-width:70ch}.about h3{margin:16px 0 6px}
-code{background:var(--field);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.85rem}
-dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:22px;width:min(420px,92vw)}
-dialog::backdrop{background:rgba(8,14,30,.55)}
-dialog form{display:grid;gap:12px}
-.seg2{display:grid;grid-template-columns:1fr 1fr;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:3px}
-.seg2 button{border:0;background:none;padding:7px;border-radius:8px;font-weight:600;color:var(--mute);cursor:pointer}
-.seg2 button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(10,20,50,.2)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.acts{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
-.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media (max-width:860px){#auth{grid-template-columns:1fr}.brandp{display:none}.kpis,.two,.grid2{grid-template-columns:1fr}.tools{grid-template-columns:1fr 1fr}.tools input{grid-column:1/-1}}
-@media (prefers-reduced-motion:reduce){.anim .seg{animation:none}.toast{transition:none}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Finance Tracker</title>
+  <style>
+    :root{--bg:#f3f5f9;--card:#fff;--ink:#14233b;--mute:#66758c;--line:#e3e8f0;--nav:#0f2747;--acc:#0e9f8e;--in:#0f9d6b;--out:#d1435b;--warn:#c98a0a;--field:#f8fafc;color-scheme:light}
+    @media (prefers-color-scheme:dark){:root{--bg:#0b1322;--card:#131d33;--ink:#e6edf7;--mute:#8fa0b8;--line:#23304a;--nav:#090f1d;--acc:#2fc9b6;--in:#4fd1a5;--out:#ff7a8a;--warn:#f2b93b;--field:#0f1829;color-scheme:dark}}
+    *{box-sizing:border-box}[hidden]{display:none!important}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+    h2{margin:0;font:600 1.5rem Georgia,serif}h3{margin:0 0 12px;font-size:.98rem}
+    .num{font-variant-numeric:tabular-nums}.mute{color:var(--mute)}.i{color:var(--in)}.o{color:var(--out)}
+    button,input,select{font:inherit;color:inherit}
+    input,select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--field);width:100%}
+    :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+    .btn{border:1px solid var(--line);background:var(--card);padding:8px 15px;border-radius:9px;cursor:pointer;font-weight:600}
+    .btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn:hover{filter:brightness(.96)}
+    label{display:grid;gap:5px;font-size:.84rem;color:var(--mute)}
+    #auth{min-height:100vh;display:grid;place-content:center;padding:24px;background:linear-gradient(160deg,var(--nav) 0 38%,var(--bg) 38%)}
+    .box{width:min(400px,90vw);background:var(--card);border-radius:16px;padding:30px;display:grid;gap:14px;box-shadow:0 18px 50px rgba(8,16,40,.25)}
+    .box h2{font-size:1.6rem}.box form{display:grid;gap:12px}
+    .note{font-size:.8rem;color:var(--mute);margin:0}.err{color:var(--out);font-size:.85rem;min-height:1.3em;margin:0}
+    .lnk{background:none;border:0;color:var(--acc);cursor:pointer;font-weight:600;padding:0}
+    #app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+    .side{background:var(--nav);color:#cbd6ec;padding:22px 14px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;color:#fff;padding:0 8px}
+    .logo{width:32px;height:32px;border-radius:9px;background:var(--acc);display:grid;place-content:center;font-weight:800}
+    #nav{display:grid;gap:3px}
+    #nav button{display:flex;align-items:center;justify-content:space-between;background:none;border:0;color:#a9b8d4;padding:10px 12px;border-radius:9px;cursor:pointer;font-weight:600;text-align:left}
+    #nav button:hover{background:rgba(255,255,255,.06)}
+    #nav button[aria-current=page]{background:rgba(255,255,255,.12);color:#fff}
+    .nb{background:var(--out);color:#fff;border-radius:999px;font-size:.72rem;padding:1px 8px}
+    .me{margin-top:auto;display:grid;gap:8px;padding:0 8px;font-size:.88rem}
+    .me .btn{background:transparent;color:#fff;border-color:#3a557f}
+    main{padding:28px 30px 70px;max-width:1120px;width:100%}
+    .head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+    .head p{margin:3px 0 0;color:var(--mute)}
+    .pill{display:inline-block;font-size:.75rem;background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn);border-radius:999px;padding:2px 10px;margin-top:6px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 1px 2px rgba(15,39,71,.04)}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+    .kpi small{color:var(--mute)}.kpi b{display:block;font:600 1.55rem Georgia,serif;margin:2px 0}.kpi span{font-size:.8rem;color:var(--mute)}
+    .g2{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;margin-bottom:14px}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+    .alert{border-radius:12px;padding:12px 16px;margin-bottom:10px;display:flex;gap:10px;align-items:center;border:1px solid}
+    .alert.WARNING{background:color-mix(in srgb,var(--warn) 13%,transparent);border-color:var(--warn)}
+    .alert.EXCEEDED{background:color-mix(in srgb,var(--out) 13%,transparent);border-color:var(--out)}
+    .chart{display:flex;align-items:center;gap:18px}.donut{position:relative;width:140px;height:140px;flex:none}.donut svg{width:100%;height:100%}
+    .donut div{position:absolute;inset:0;display:grid;place-content:center;text-align:center;font-size:.8rem;color:var(--mute)}.donut b{color:var(--ink);font-size:.95rem}
+    .anim .seg{animation:draw .9s ease-out both}@keyframes draw{from{stroke-dasharray:0 100}}
+    .legend{list-style:none;margin:0;padding:0;display:grid;gap:6px;flex:1;min-width:0;font-size:.9rem}
+    .legend li{display:flex;gap:8px;align-items:center}.legend i{width:10px;height:10px;border-radius:3px;flex:none}.legend em{margin-left:auto;font-style:normal;color:var(--mute)}
+    .tools{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;margin-bottom:14px}
+    .tw{overflow-x:auto}table{width:100%;border-collapse:collapse}
+    th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+    thead th{background:var(--field);font-size:.8rem;color:var(--mute);font-weight:600}thead th button{all:unset;cursor:pointer}
+    td.r,th.r{text-align:right}tbody tr:hover{background:var(--field)}
+    .badge{font-size:.76rem;font-weight:600;padding:2px 10px;border-radius:999px}
+    .b-i,.b-OK{background:color-mix(in srgb,var(--in) 16%,transparent);color:var(--in)}
+    .b-o,.b-EXCEEDED{background:color-mix(in srgb,var(--out) 16%,transparent);color:var(--out)}
+    .b-WARNING,.b-soon{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:8px}
+    .del{background:none;border:0;color:var(--out);cursor:pointer;padding:2px 6px}
+    .empty{text-align:center;color:var(--mute);padding:26px}
+    .meter{height:10px;border-radius:5px;background:var(--line);margin:10px 0 6px;overflow:hidden}.meter span{display:block;height:100%;border-radius:5px;background:var(--in)}
+    .meter.WARNING span{background:var(--warn)}.meter.EXCEEDED span{background:var(--out)}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .acc b{font:600 1.5rem Georgia,serif;display:block;margin:6px 0 2px}
+    .about p,.about li{color:var(--mute);max-width:70ch}.about h3{margin:18px 0 6px}
+    code{background:var(--field);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.85rem}
+    dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);padding:24px;width:min(430px,92vw)}
+    dialog::backdrop{background:rgba(8,14,30,.55)}dialog form{display:grid;gap:13px}dialog h2{font-size:1.25rem}
+    .acts{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+    .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .menu{display:flex;flex-direction:column;gap:22px;flex:1;min-height:0}
+    .kebab,.pt{display:none}
+    .card,.kpi,.head>div{min-width:0}.kpi b{overflow-wrap:anywhere}
+    @media (max-width:900px){
+      #app{grid-template-columns:1fr}
+      .side{position:sticky;top:0;z-index:30;height:auto;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left))}
+      .brand{min-width:0;flex:1}.bt{display:none}
+      .pt{display:block;font-weight:700;color:#fff;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .kebab{display:grid;place-content:center;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.1);border:0;color:#fff;cursor:pointer;flex:none}
+      .menu{display:none;position:absolute;top:100%;left:10px;right:10px;margin-top:6px;background:var(--nav);border:1px solid #2a3f66;border-radius:14px;padding:10px;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.4);max-height:calc(100vh - 90px);overflow-y:auto}
+      .side.open .menu{display:flex}
+      #nav button{padding:13px 14px;min-height:44px}
+      .me{margin:0;padding:10px 6px 4px;border-top:1px solid #2a3f66}
+      main{padding:18px calc(14px + env(safe-area-inset-right)) 70px calc(14px + env(safe-area-inset-left))}
+      h2{font-size:1.3rem}
+      .head{flex-direction:column;align-items:stretch}
+      .kpis{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}.cards{grid-template-columns:1fr}
+      .tools{grid-template-columns:1fr 1fr}.tools input,.tools .btn{grid-column:1/-1}
+      input,select{font-size:16px;min-height:44px}.btn{min-height:44px}
+      .chart{flex-direction:column}.legend{width:100%}.alert{flex-wrap:wrap}
+      .hm{display:none}
+      th,td{padding:10px 8px;white-space:normal}td.num,td.r.num{white-space:nowrap}
+      dialog{max-height:90vh;overflow-y:auto}
+      .toast{max-width:90vw;text-align:center;bottom:calc(22px + env(safe-area-inset-bottom))}
+    }
+    @media (max-width:520px){.kpis{grid-template-columns:1fr}.kpi b{font-size:1.4rem}.box{padding:22px}}
+    @media (prefers-reduced-motion:reduce){.anim .seg{animation:none}.toast{transition:none}}
+  </style>
 </head>
 <body>
-
-<div id="auth">
-  <div class="brandp">
-    <h1>Know where your money goes.</h1>
-    <p>A personal finance tracker for recording income and expenses and seeing clear reports.</p>
-    <ul><li>Track every transaction</li><li>See spending by category</li><li>Review monthly totals</li></ul>
-  </div>
-  <div class="formp"><div class="authbox">
-    <div class="tabs2" role="tablist"><button role="tab" id="mIn" aria-selected="true">Sign in</button><button role="tab" id="mUp" aria-selected="false">Create account</button></div>
-    <form id="authForm" class="" style="display:grid;gap:12px" novalidate>
-      <label id="nameL" hidden>Full name<input id="aName" autocomplete="name"></label>
-      <label>Email<input id="aEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
-      <label>Password<input id="aPass" type="password" autocomplete="current-password" placeholder="At least 8 characters"></label>
-      <p class="err" id="aErr" role="alert"></p>
-      <button class="btn p" id="aGo" type="submit">Sign in</button>
-    </form>
-    <p class="note">Demo sign-in: the server does not check or store passwords yet. Real authentication with Spring Security is on the roadmap.</p>
-  </div></div>
-</div>
+<div id="auth"><div class="box">
+  <div><h2 id="aTitle">Welcome back</h2><p class="note" style="margin-top:4px">Sign in to your finance tracker.</p></div>
+  <form id="authForm" novalidate>
+    <label id="nameL" hidden>Full name<input id="aName" autocomplete="name"></label>
+    <label>Email<input id="aEmail" type="email" autocomplete="email" placeholder="you@example.com"></label>
+    <label>Password<input id="aPass" type="password" autocomplete="current-password" placeholder="At least 8 characters"></label>
+    <p class="err" id="aErr" role="alert"></p>
+    <button class="btn p" id="aGo" type="submit">Sign in</button>
+  </form>
+  <p class="note"><span id="aAsk">New here?</span> <button class="lnk" id="aSwap" type="button">Create an account</button></p>
+  <p class="note">Demo sign-in: the server does not check or store passwords yet. Spring Security is on the roadmap.</p>
+</div></div>
 
 <div id="app" hidden>
-  <header class="top"><div class="bar">
-    <div class="brand"><span class="logo">F</span>Finance Tracker</div>
-    <nav id="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" data-view="dashboard">Dashboard</button>
-      <button role="tab" data-view="transactions">Transactions</button>
-      <button role="tab" data-view="reports">Reports</button>
-      <button role="tab" data-view="about">About</button>
-    </nav>
-    <div class="user"><span id="uname"></span><button class="btn" id="logout">Log out</button></div>
-  </div></header>
-
+  <aside class="side">
+    <div class="brand"><span class="logo">F</span><span class="bt">Finance Tracker</span><span class="pt" id="pageTitle">Dashboard</span></div>
+    <button class="kebab" id="kebab" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="10" cy="3.5" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="10" cy="16.5" r="1.8"/></svg></button>
+    <div class="menu" id="menu">
+      <nav id="nav" aria-label="Sections"></nav>
+      <div class="me"><span id="uname"></span><button class="btn" id="logout">Log out</button></div>
+    </div>
+  </aside>
   <main>
     <section id="v-dashboard" hidden>
-      <div class="head"><div><h2>Dashboard</h2><p>Your finances at a glance.</p></div><button class="btn p" data-add>Add transaction</button></div>
-      <div class="kpis num">
-        <div class="card kpi"><small>Balance</small><b id="kBal">0.00</b></div>
-        <div class="card kpi"><small>Income</small><b class="i" id="kIn">0.00</b></div>
-        <div class="card kpi"><small>Expenses</small><b class="o" id="kOut">0.00</b></div>
+      <div class="head"><div><h2>Dashboard</h2><p>Your finances at a glance.</p></div><button class="btn p" data-addtx>Add transaction</button></div>
+      <div id="alerts"></div>
+      <div class="kpis num" id="kpis"></div>
+      <div class="g2">
+        <div class="card"><h3>Spending by category</h3><div class="chart"><div class="donut"><svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Spending by category"></svg><div><span>Spent</span><b class="num" id="kC">0.00</b></div></div><ul class="legend" id="legend"></ul></div></div>
+        <div class="card"><h3>Upcoming bills</h3><div id="upBills"></div></div>
       </div>
-      <div class="two">
-        <div class="card"><h3>Spending by category</h3>
-          <div class="chart"><div class="donut"><svg id="donut" viewBox="0 0 42 42" role="img" aria-label="Spending by category"></svg><div><span>Spent</span><b class="num" id="kCenter">0.00</b></div></div><ul class="legend" id="legend"></ul></div></div>
-        <div class="card"><h3>Recent transactions</h3><div class="tw"><table><tbody id="recent"></tbody></table></div><p class="empty" id="recentEmpty" hidden>No transactions yet.</p></div>
-      </div>
+      <div class="card"><h3>Recent transactions</h3><div class="tw"><table><tbody id="recent"></tbody></table></div><p class="empty" id="recentE" hidden>No transactions yet. Add your first one.</p></div>
     </section>
 
     <section id="v-transactions" hidden>
-      <div class="head"><div><h2>Transactions</h2><p>Search, filter and sort your records.</p></div><button class="btn p" data-add>Add transaction</button></div>
+      <div class="head"><div><h2>Transactions</h2><p>Search, filter and sort your records.</p></div><button class="btn p" data-addtx>Add transaction</button></div>
       <div class="card">
-        <div class="tools">
-          <input id="q" type="search" placeholder="Search description or category" aria-label="Search">
-          <select id="fc" aria-label="Category"></select>
-          <select id="ft" aria-label="Type"><option value="all">All types</option><option value="in">Income</option><option value="out">Expense</option></select>
-          <button class="btn" id="csv">Export CSV</button>
-        </div>
-        <div class="tw"><table>
-          <thead><tr>
-            <th><button data-sort="date">Date</button></th><th><button data-sort="description">Description</button></th>
-            <th><button data-sort="category">Category</button></th><th>Type</th><th class="r"><button data-sort="amount">Amount</button></th><th></th>
-          </tr></thead><tbody id="rows"></tbody></table></div>
-        <p class="empty" id="empty" hidden>No matching transactions.</p>
-        <p class="mute" id="count" style="margin:12px 0 0"></p>
+        <div class="tools"><input id="q" type="search" placeholder="Search description or category" aria-label="Search"><select id="fc" aria-label="Category"></select>
+          <select id="ft" aria-label="Type"><option value="all">All types</option><option value="in">Income</option><option value="out">Expense</option></select><button class="btn" id="csv">Export CSV</button></div>
+        <div class="tw"><table><thead><tr><th><button data-sort="date">Date</button></th><th><button data-sort="description">Description</button></th><th><button data-sort="category">Category</button></th><th class="hm">Account</th><th class="hm">Type</th><th class="r"><button data-sort="amount">Amount</button></th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+        <p class="empty" id="empty" hidden>No matching transactions.</p><p class="mute" id="count" style="margin:12px 0 0"></p>
       </div>
     </section>
 
+    <section id="v-accounts" hidden>
+      <div class="head"><div><h2>Accounts</h2><p>All your bank accounts merged into one view.</p><span class="pill">Preview: saved in this browser until the accounts API is built</span></div><button class="btn p" id="addAcc">Add account</button></div>
+      <div class="card" style="margin-bottom:14px"><small class="mute">Merged balance</small><div class="num" style="font:600 2.2rem Georgia,serif" id="mergedBal">0.00</div></div>
+      <div class="cards" id="accCards"></div>
+    </section>
+
+    <section id="v-limits" hidden>
+      <div class="head"><div><h2>Spending limits</h2><p>Get warned before you overspend this month.</p><span class="pill">Preview: limits are saved in this browser, usage is calculated from your real transactions</span></div><button class="btn p" id="addLim">Add limit</button></div>
+      <div class="cards" id="limCards"></div>
+    </section>
+
+    <section id="v-bills" hidden>
+      <div class="head"><div><h2>Bills</h2><p>Track recurring bills and due dates.</p><span class="pill">Preview: saved in this browser until the bills API and email reminders are built</span></div><button class="btn p" id="addBill">Add bill</button></div>
+      <div class="card"><div class="tw"><table><thead><tr><th>Bill</th><th>Due</th><th>Status</th><th class="r">Amount</th><th></th></tr></thead><tbody id="billRows"></tbody></table></div><p class="empty" id="billE" hidden>No bills yet.</p></div>
+    </section>
+
     <section id="v-reports" hidden>
-      <div class="head"><div><h2>Reports</h2><p>Where the money goes, and how each month looks.</p></div></div>
-      <div class="grid2">
-        <div class="card"><h3>Expenses by category</h3><div class="tw"><table><thead><tr><th>Category</th><th class="r">Count</th><th class="r">Total</th><th>Share</th></tr></thead><tbody id="repCat"></tbody></table></div></div>
-        <div class="card"><h3>Monthly summary</h3><div class="tw"><table><thead><tr><th>Month</th><th class="r">Income</th><th class="r">Expenses</th><th class="r">Net</th></tr></thead><tbody id="repMon"></tbody></table></div></div>
-      </div>
+      <div class="head"><div><h2>Reports</h2><p>Monthly income, expenses and net.</p></div></div>
+      <div class="card"><div class="tw"><table><thead><tr><th>Month</th><th class="r">Income</th><th class="r">Expenses</th><th class="r">Net</th></tr></thead><tbody id="repMon"></tbody></table></div></div>
     </section>
 
     <section id="v-about" class="about" hidden>
       <div class="head"><div><h2>About</h2></div></div>
       <div class="card">
-        <p>Finance Tracker is a personal finance application with a Java REST API and a web interface. It records income and expenses, summarizes spending by category and shows monthly totals.</p>
-        <h3>Technology</h3>
-        <ul><li>Java 17+, Spring Boot 3, Spring Data JPA, H2 database</li><li>JUnit 5 and Mockito tests, GitHub Actions CI</li><li>Plain HTML, CSS and JavaScript front end, no build step</li></ul>
-        <h3>API</h3>
-        <ul><li><code>GET /api/transactions</code> list transactions</li><li><code>POST /api/transactions</code> add a transaction</li><li><code>DELETE /api/transactions/{id}</code> delete one</li><li><code>GET /api/transactions/summary</code> totals and spending by category</li></ul>
-        <h3>Roadmap</h3>
-        <ul><li>CSV import with duplicate detection</li><li>Rule-based auto-categorization</li><li>Budgets with overspending alerts</li><li>Server-side authentication with Spring Security</li><li>Docker image and OpenAPI documentation</li></ul>
-        <h3>Source code</h3>
-        <p><a href="https://github.com/Nazurudeen-05/finance-tracker" target="_blank" rel="noopener" style="color:var(--acc)">github.com/Nazurudeen-05/finance-tracker</a></p>
+        <p>Finance Tracker is a personal finance app with a Java REST API and a web interface for recording income and expenses, spending by category and monthly totals.</p>
+        <h3>Live today</h3><ul><li>Transactions API: <code>GET/POST /api/transactions</code>, <code>DELETE /api/transactions/{id}</code></li><li>Dashboard, transactions table, reports</li></ul>
+        <h3>Preview in this interface</h3><ul><li>Accounts, spending limits and bills are saved in your browser while their APIs are being built. Limit usage and the forecast are calculated from your real transactions.</li></ul>
+        <h3>Not built yet</h3><ul><li>Split expenses, receipt upload, real authentication, CSV import</li></ul>
+        <h3>Source code</h3><p><a href="https://github.com/Nazurudeen-05/finance-tracker" target="_blank" rel="noopener" style="color:var(--acc)">github.com/Nazurudeen-05/finance-tracker</a></p>
       </div>
     </section>
   </main>
 </div>
-
-<dialog id="dlg">
-  <form id="form" method="dialog">
-    <h2>New transaction</h2>
-    <div class="seg2" role="group" aria-label="Type"><button type="button" id="bExp" aria-pressed="true">Expense</button><button type="button" id="bInc" aria-pressed="false">Income</button></div>
-    <label>Amount<input id="amount" type="number" step="0.01" min="0.01" placeholder="0.00" required></label>
-    <label>Description<input id="description" maxlength="120" required></label>
-    <div class="row2"><label>Category<input id="category" list="cats" placeholder="Food"></label><label>Date<input id="date" type="date" required></label></div>
-    <datalist id="cats"></datalist>
-    <div class="acts"><button class="btn" type="button" id="cancel">Cancel</button><button class="btn p" type="submit">Save transaction</button></div>
-  </form>
-</dialog>
+<dialog id="dlg"><form id="form" method="dialog"></form></dialog>
+<datalist id="cats"></datalist>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
-const CURRENCY = '';   // e.g. '$' or '₹'
-const API = '/api/transactions', SKEY = 'ft_session';
-const PAL = ['#2f80ed','#0e9f8e','#f2a33a','#d1435b','#8b5cf6','#16a34a','#e0b400','#64748b'];
-const $ = id => document.getElementById(id);
-const fmt = n => CURRENCY + Number(n).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-const h = (t, p = {}, ...k) => { const e = document.createElement(t); for (const a in p) { if (a === 'class') e.className = p[a]; else if (a === 'text') e.textContent = p[a]; else if (a.startsWith('on')) e[a] = p[a]; else e.setAttribute(a, p[a]); } e.append(...k); return e; };
-const svgEl = (t, a) => { const e = document.createElementNS('http://www.w3.org/2000/svg', t); for (const k in a) e.setAttribute(k, a[k]); return e; };
-const catOf = t => t.category || 'Uncategorized';
-let data = [], sum = {income: 0, expenses: 0, balance: 0, expensesByCategory: {}}, sign = -1, sortKey = 'date', sortDir = -1, first = true, mode = 'in', mem = null;
+  const CURRENCY = '';  // e.g. '$' or '₹'
+  const API = '/api/transactions';
+  const VIEWS = ['dashboard','transactions','accounts','limits','bills','reports','about'];
+  const PAL = ['#2f80ed','#0e9f8e','#f2a33a','#d1435b','#8b5cf6','#16a34a','#e0b400','#64748b'];
+  const $ = id => document.getElementById(id);
+  const fmt = n => CURRENCY + Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  const h = (t,p={},...k) => { const e=document.createElement(t); for (const a in p){ if(a==='class')e.className=p[a]; else if(a==='text')e.textContent=p[a]; else if(a.startsWith('on'))e[a]=p[a]; else e.setAttribute(a,p[a]); } e.append(...k); return e; };
+  const svgEl = (t,a) => { const e=document.createElementNS('http://www.w3.org/2000/svg',t); for(const k in a)e.setAttribute(k,a[k]); return e; };
+  const ymd = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const catOf = t => t.category || 'Uncategorized';
+  const store = {get:(k,d)=>{try{return JSON.parse(localStorage.getItem('ft_'+k))??d}catch(e){return d}}, set:(k,v)=>{try{localStorage.setItem('ft_'+k,JSON.stringify(v))}catch(e){}}};
+  let data=[], accounts=store.get('accounts',[]), limits=store.get('limits',[]), bills=store.get('bills',[]), amap=store.get('amap',{});
+  let sortKey='date', sortDir=-1, first=true, mode='in', mem=null;
+  const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const colorOf = n => PAL[[...new Set(data.map(catOf))].sort().indexOf(n) % PAL.length] || PAL[0];
+  function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast.id); toast.id=setTimeout(()=>t.classList.remove('show'),2300); }
 
-function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.id); toast.id = setTimeout(() => t.classList.remove('show'), 2200); }
-const colorOf = n => PAL[[...new Set(data.map(catOf))].sort().indexOf(n) % PAL.length] || PAL[0];
+  /* generic dialog form */
+  function form(title, fields, submit){
+    const d=$('dlg'), f=$('form');
+    f.replaceChildren(h('h2',{text:title}), ...fields.map(x=>{
+              const el = x.options ? h('select',{id:'f_'+x.id}, ...x.options.map(o=>h('option',{value:o[0],text:o[1]}))) : h('input',{id:'f_'+x.id,type:x.type||'text',...(x.attrs||{})});
+              if (x.value!==undefined) el.value=x.value; return h('label',{text:x.label},el); }),
+            h('div',{class:'acts'},h('button',{class:'btn',type:'button',text:'Cancel',onclick:()=>d.close()}),h('button',{class:'btn p',type:'submit',text:'Save'})));
+    f.onsubmit = async e => { e.preventDefault(); const v={}; fields.forEach(x=>v[x.id]=$('f_'+x.id).value.trim()); if (await submit(v)!==false) d.close(); };
+    d.showModal(); (f.querySelector('input,select')||f).focus();
+  }
 
-/* auth (demo, client side only) */
-function getSession() { try { return JSON.parse(localStorage.getItem(SKEY)) || mem; } catch (e) { return mem; } }
-function setSession(s) { mem = s; try { s ? localStorage.setItem(SKEY, JSON.stringify(s)) : localStorage.removeItem(SKEY); } catch (e) {} }
-function authMode(m) {
-  mode = m; $('mIn').setAttribute('aria-selected', m === 'in'); $('mUp').setAttribute('aria-selected', m === 'up');
-  $('nameL').hidden = m === 'in'; $('aGo').textContent = m === 'in' ? 'Sign in' : 'Create account'; $('aErr').textContent = '';
-}
-$('mIn').onclick = () => authMode('in'); $('mUp').onclick = () => authMode('up');
-$('authForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = $('aEmail').value.trim(), pass = $('aPass').value, name = $('aName').value.trim();
-  const err = !/^\S+@\S+\.\S+$/.test(email) ? 'Enter a valid email address.' : pass.length < 8 ? 'Password must be at least 8 characters.' : mode === 'up' && !name ? 'Enter your full name.' : '';
-  $('aErr').textContent = err; if (err) return;
-  setSession({name: name || email.split('@')[0], email}); $('aPass').value = ''; enter();
-});
-$('logout').onclick = () => { setSession(null); $('app').hidden = true; $('auth').hidden = false; };
-function enter() {
-  const s = getSession(); if (!s) { $('auth').hidden = false; $('app').hidden = true; return; }
-  $('auth').hidden = true; $('app').hidden = false; $('uname').textContent = s.name;
-  show((location.hash || '#dashboard').slice(1)); load();
-}
+  /* demo auth */
+  const getSession=()=>{try{return JSON.parse(localStorage.getItem('ft_session'))||mem}catch(e){return mem}};
+  const setSession=s=>{mem=s;try{s?localStorage.setItem('ft_session',JSON.stringify(s)):localStorage.removeItem('ft_session')}catch(e){}};
+  function authMode(m){ mode=m; const up=m==='up'; $('nameL').hidden=!up; $('aTitle').textContent=up?'Create your account':'Welcome back'; $('aGo').textContent=up?'Create account':'Sign in'; $('aAsk').textContent=up?'Already registered?':'New here?'; $('aSwap').textContent=up?'Sign in':'Create an account'; $('aErr').textContent=''; }
+  $('aSwap').onclick=()=>authMode(mode==='in'?'up':'in');
+  $('authForm').addEventListener('submit',e=>{ e.preventDefault();
+    const email=$('aEmail').value.trim(), pass=$('aPass').value, name=$('aName').value.trim();
+    const err=!/^\S+@\S+\.\S+$/.test(email)?'Enter a valid email address.':pass.length<8?'Password must be at least 8 characters.':mode==='up'&&!name?'Enter your full name.':'';
+    $('aErr').textContent=err; if(err)return; setSession({name:name||email.split('@')[0],email}); $('aPass').value=''; enter(); });
+  $('logout').onclick=()=>{setSession(null);$('app').hidden=true;$('auth').hidden=false;};
+  function enter(){ if(!getSession()){$('auth').hidden=false;$('app').hidden=true;return;}
+    $('auth').hidden=true; $('app').hidden=false; $('uname').textContent=getSession().name; show((location.hash||'#dashboard').slice(1)); load(); }
 
-/* tabs */
-function show(v) {
-  if (!['dashboard', 'transactions', 'reports', 'about'].includes(v)) v = 'dashboard';
-  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v));
-  ['dashboard', 'transactions', 'reports', 'about'].forEach(n => $('v-' + n).hidden = n !== v);
-  history.replaceState(null, '', '#' + v);
-}
-document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.view));
+  /* navigation */
+  const side=document.querySelector('.side');
+  function menu(open){ side.classList.toggle('open',open); $('kebab').setAttribute('aria-expanded',open); $('kebab').setAttribute('aria-label',open?'Close menu':'Open menu'); }
+  $('kebab').onclick=e=>{e.stopPropagation();menu(!side.classList.contains('open'))};
+  document.addEventListener('click',e=>{if(!side.contains(e.target))menu(false)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});
+  $('nav').replaceChildren(...VIEWS.map(v=>h('button',{'data-v':v,onclick:()=>show(v)},h('span',{text:v[0].toUpperCase()+v.slice(1)}))));
+  function show(v){ if(!VIEWS.includes(v))v='dashboard';
+    document.querySelectorAll('#nav button').forEach(b=>b.dataset.v===v?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+    VIEWS.forEach(n=>$('v-'+n).hidden=n!==v); history.replaceState(null,'','#'+v); $('pageTitle').textContent=v[0].toUpperCase()+v.slice(1); menu(false); scrollTo(0,0); }
 
-/* data */
-async function load() {
-  try {
-    const [a, b] = await Promise.all([fetch(API), fetch(API + '/summary')]);
-    if (!a.ok || !b.ok) throw new Error();
-    data = await a.json(); sum = await b.json(); render();
-  } catch (e) { toast('Could not reach the server. Is the app running?'); }
-}
-function render() { kpis(); donut(); recent(); filters(); table(); reports(); }
+  /* data */
+  async function load(){ try{ const r=await fetch(API); if(!r.ok)throw 0; data=await r.json(); renderAll(); }catch(e){ toast('Could not reach the server. Is the app running?'); renderAll(); } }
+  const monthKey=d=>ymd(d).slice(0,7);
+  const spentIn=(pred)=>data.filter(t=>t.amount<0&&pred(t)).reduce((s,t)=>s+Math.abs(t.amount),0);
+  function limStatus(l){ const mk=monthKey(new Date()); const spent=spentIn(t=>t.date.slice(0,7)===mk&&(!l.category||catOf(t).toLowerCase()===l.category.toLowerCase()));
+    const pct=spent/l.amount*100; return {spent,pct,state:pct>=100?'EXCEEDED':pct>=l.warn?'WARNING':'OK'}; }
+  function billInfo(b){ const n=new Date(), last=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(), due=new Date(n.getFullYear(),n.getMonth(),Math.min(b.day,last));
+    const days=Math.round((due-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5), paid=b.paid===monthKey(n);
+    return {due,days,paid,label:paid?'Paid':days<0?'Overdue by '+(-days)+'d':days===0?'Due today':'Due in '+days+'d',cls:paid?'OK':days<0?'EXCEEDED':days<=b.remind?'soon':'OK'}; }
+  const balance=()=>accounts.reduce((s,a)=>s+Number(a.open),0)+data.reduce((s,t)=>s+Number(t.amount),0);
+  function forecast(){ const n=new Date(), cut=new Date(n-30*864e5); const exp=spentIn(t=>new Date(t.date+'T00:00')>=cut);
+    if(!exp) return null; const left=new Date(n.getFullYear(),n.getMonth()+1,0).getDate()-n.getDate();
+    const unpaid=bills.map(billInfo).filter((b,i)=>!b.paid&&b.days>0).reduce((s,b,i)=>s,0);
+    const due=bills.filter(b=>{const i=billInfo(b);return !i.paid&&i.days>0}).reduce((s,b)=>s+Number(b.amount),0);
+    return balance()-exp/30*left-due; }
 
-function kpis() {
-  $('kBal').textContent = fmt(sum.balance); $('kIn').textContent = fmt(sum.income); $('kOut').textContent = fmt(sum.expenses); $('kCenter').textContent = fmt(sum.expenses);
-}
-function donut() {
-  const svg = $('donut'), total = Number(sum.expenses), en = Object.entries(sum.expensesByCategory).sort((a, b) => b[1] - a[1]);
-  svg.replaceChildren(svgEl('circle', {cx: 21, cy: 21, r: 15.9155, fill: 'none', stroke: 'var(--line)', 'stroke-width': 5}));
-  let acc = 0;
-  en.forEach(([n, v]) => { const p = v / total * 100;
-    svg.append(svgEl('circle', {class: 'seg', cx: 21, cy: 21, r: 15.9155, fill: 'none', stroke: colorOf(n), 'stroke-width': 5, 'stroke-dasharray': p + ' ' + (100 - p), 'stroke-dashoffset': 25 - acc})); acc += p; });
-  if (first && en.length) { svg.classList.add('anim'); first = false; } else svg.classList.remove('anim');
-  $('legend').replaceChildren(...(en.length ? en.slice(0, 5).map(([n, v]) => h('li', {}, h('i', {style: 'background:' + colorOf(n)}), h('span', {text: n}), h('em', {class: 'num', text: fmt(v)})))
-    : [h('li', {class: 'mute', text: 'No spending yet'})]));
-}
-function amtCell(t) { return h('td', {class: 'r num ' + (t.amount >= 0 ? 'i' : 'o'), text: (t.amount >= 0 ? '+' : '-') + fmt(Math.abs(t.amount))}); }
-function recent() {
-  $('recentEmpty').hidden = data.length > 0;
-  $('recent').replaceChildren(...data.slice(0, 6).map(t => h('tr', {}, h('td', {text: t.description}), h('td', {class: 'mute', text: t.date}), amtCell(t))));
-}
-function filters() {
-  const sel = $('fc'), cur = sel.value || 'All';
-  sel.replaceChildren(...['All', ...new Set(data.map(catOf))].map(c => h('option', {value: c, text: c === 'All' ? 'All categories' : c})));
-  sel.value = [...sel.options].some(o => o.value === cur) ? cur : 'All';
-  $('cats').replaceChildren(...[...new Set(data.map(t => t.category).filter(Boolean))].map(c => h('option', {value: c})));
-}
-function table() {
-  const q = $('q').value.toLowerCase(), c = $('fc').value, ty = $('ft').value;
-  const rows = data.filter(t => (c === 'All' || catOf(t) === c) && (ty === 'all' || (ty === 'in' ? t.amount >= 0 : t.amount < 0)) && (t.description + ' ' + catOf(t)).toLowerCase().includes(q));
-  const val = t => sortKey === 'amount' ? Number(t.amount) : sortKey === 'category' ? catOf(t).toLowerCase() : String(t[sortKey]).toLowerCase();
-  rows.sort((a, b) => (val(a) > val(b) ? 1 : val(a) < val(b) ? -1 : 0) * sortDir);
-  $('empty').hidden = rows.length > 0; $('count').textContent = 'Showing ' + rows.length + ' of ' + data.length + ' transactions';
-  $('rows').replaceChildren(...rows.map(t => h('tr', {},
-    h('td', {class: 'num', text: t.date}), h('td', {text: t.description}),
-    h('td', {}, h('span', {class: 'dot', style: 'background:' + colorOf(catOf(t))}), catOf(t)),
-    h('td', {}, h('span', {class: 'badge ' + (t.amount >= 0 ? 'i' : 'o'), text: t.amount >= 0 ? 'Income' : 'Expense'})),
-    amtCell(t),
-    h('td', {}, h('button', {class: 'lnk', text: 'Delete', 'aria-label': 'Delete ' + t.description, onclick: async () => {
-      if (!confirm('Delete "' + t.description + '"?')) return; await fetch(API + '/' + t.id, {method: 'DELETE'}); toast('Transaction deleted'); load(); }})))));
-}
-document.querySelectorAll('[data-sort]').forEach(b => b.onclick = () => { const k = b.dataset.sort; sortDir = sortKey === k ? -sortDir : 1; sortKey = k; table(); });
-['q', 'fc', 'ft'].forEach(id => $(id).addEventListener('input', table));
+  function renderAll(){ filters(); dash(); txTable(); accV(); limV(); billV(); rep(); }
 
-function reports() {
-  const by = {}; let tot = 0;
-  data.filter(t => t.amount < 0).forEach(t => { const o = by[catOf(t)] ||= {n: 0, s: 0}; o.n++; o.s += Math.abs(t.amount); tot += Math.abs(t.amount); });
-  const cr = Object.entries(by).sort((a, b) => b[1].s - a[1].s);
-  $('repCat').replaceChildren(...(cr.length ? cr.map(([n, o]) => h('tr', {}, h('td', {}, h('span', {class: 'dot', style: 'background:' + colorOf(n)}), n), h('td', {class: 'r num', text: o.n}), h('td', {class: 'r num', text: fmt(o.s)}),
-    h('td', {}, h('div', {class: 'bar2'}, h('span', {style: 'width:' + (o.s / tot * 100) + '%'}))))) : [h('tr', {}, h('td', {colspan: 4, class: 'empty', text: 'No expenses yet.'}))]));
-  const mo = {};
-  data.forEach(t => { const k = t.date.slice(0, 7), o = mo[k] ||= {i: 0, e: 0}; t.amount >= 0 ? o.i += Number(t.amount) : o.e += Math.abs(t.amount); });
-  const mr = Object.entries(mo).sort().reverse();
-  $('repMon').replaceChildren(...(mr.length ? mr.map(([k, o]) => h('tr', {}, h('td', {text: new Date(k + '-01T00:00').toLocaleDateString(undefined, {month: 'short', year: 'numeric'})}),
-    h('td', {class: 'r num i', text: fmt(o.i)}), h('td', {class: 'r num o', text: fmt(o.e)}), h('td', {class: 'r num', text: fmt(o.i - o.e)}))) : [h('tr', {}, h('td', {colspan: 4, class: 'empty', text: 'No data yet.'}))]));
-}
+  function dash(){
+    const inc=data.filter(t=>t.amount>=0).reduce((s,t)=>s+Number(t.amount),0), out=spentIn(()=>true), f=forecast();
+    $('kpis').replaceChildren(...[['Balance',fmt(balance()),accounts.length?'Across '+accounts.length+' account'+(accounts.length>1?'s':''):'All transactions',''],['Income',fmt(inc),'All time','i'],['Expenses',fmt(out),'All time','o'],
+      ['Forecast, month end',f===null?'Not enough data':fmt(f),'30-day average spend plus unpaid bills','']].map(([a,b,c,d])=>h('div',{class:'card kpi'},h('small',{text:a}),h('b',{class:d,text:b}),h('span',{text:c}))));
+    $('alerts').replaceChildren(...limits.map(l=>({l,s:limStatus(l)})).filter(x=>x.s.state!=='OK').map(({l,s})=>h('div',{class:'alert '+s.state},h('span',{class:'badge b-'+s.state,text:s.state==='EXCEEDED'?'Limit exceeded':'Near limit'}),
+            h('span',{text:(l.category||'Overall spending')+': '+fmt(s.spent)+' of '+fmt(l.amount)+' this month'}))));
+    const by={}; data.filter(t=>t.amount<0).forEach(t=>by[catOf(t)]=(by[catOf(t)]||0)+Math.abs(t.amount));
+    const en=Object.entries(by).sort((a,b)=>b[1]-a[1]), svg=$('donut'); $('kC').textContent=fmt(out);
+    svg.replaceChildren(svgEl('circle',{cx:21,cy:21,r:15.9155,fill:'none',stroke:'var(--line)','stroke-width':5})); let acc=0;
+    en.forEach(([n,v])=>{const p=v/out*100; svg.append(svgEl('circle',{class:'seg',cx:21,cy:21,r:15.9155,fill:'none',stroke:colorOf(n),'stroke-width':5,'stroke-dasharray':p+' '+(100-p),'stroke-dashoffset':25-acc})); acc+=p;});
+    if(first&&en.length){svg.classList.add('anim');first=false}else svg.classList.remove('anim');
+    $('legend').replaceChildren(...(en.length?en.slice(0,5).map(([n,v])=>h('li',{},h('i',{style:'background:'+colorOf(n)}),h('span',{text:n}),h('em',{class:'num',text:fmt(v)}))):[h('li',{class:'mute',text:'No spending yet'})]));
+    const up=bills.map(b=>({b,i:billInfo(b)})).filter(x=>!x.i.paid).sort((a,b)=>a.i.days-b.i.days).slice(0,4);
+    $('upBills').replaceChildren(...(up.length?up.map(({b,i})=>h('div',{class:'row',style:'padding:8px 0;border-bottom:1px solid var(--line)'},h('div',{},h('b',{text:b.name}),h('div',{class:'mute',style:'font-size:.82rem',text:i.label})),h('span',{class:'num',text:fmt(b.amount)}))):[h('p',{class:'mute',text:'No unpaid bills. Add them on the Bills tab.'})]));
+    $('recentE').hidden=data.length>0;
+    $('recent').replaceChildren(...data.slice(0,6).map(t=>h('tr',{},h('td',{text:t.description}),h('td',{class:'mute',text:t.date}),amt(t))));
+  }
+  const amt=t=>h('td',{class:'r num '+(t.amount>=0?'i':'o'),text:(t.amount>=0?'+':'-')+fmt(Math.abs(t.amount))});
+  function filters(){ const s=$('fc'), cur=s.value||'All'; s.replaceChildren(...['All',...new Set(data.map(catOf))].map(c=>h('option',{value:c,text:c==='All'?'All categories':c})));
+    s.value=[...s.options].some(o=>o.value===cur)?cur:'All'; $('cats').replaceChildren(...[...new Set(data.map(t=>t.category).filter(Boolean))].map(c=>h('option',{value:c}))); }
+  const accName=t=>(accounts.find(a=>a.id===amap[t.id])||{}).name||'';
+  function txTable(){
+    const q=$('q').value.toLowerCase(), c=$('fc').value, ty=$('ft').value;
+    const rows=data.filter(t=>(c==='All'||catOf(t)===c)&&(ty==='all'||(ty==='in'?t.amount>=0:t.amount<0))&&(t.description+' '+catOf(t)).toLowerCase().includes(q));
+    const val=t=>sortKey==='amount'?Number(t.amount):sortKey==='category'?catOf(t).toLowerCase():String(t[sortKey]).toLowerCase();
+    rows.sort((a,b)=>(val(a)>val(b)?1:val(a)<val(b)?-1:0)*sortDir);
+    $('empty').hidden=rows.length>0; $('count').textContent='Showing '+rows.length+' of '+data.length+' transactions';
+    $('rows').replaceChildren(...rows.map(t=>h('tr',{},h('td',{class:'num',text:t.date}),h('td',{text:t.description}),
+            h('td',{},h('span',{class:'dot',style:'background:'+colorOf(catOf(t))}),catOf(t)),h('td',{class:'mute hm',text:accName(t)||'-'}),
+            h('td',{class:'hm'},h('span',{class:'badge b-'+(t.amount>=0?'i':'o'),text:t.amount>=0?'Income':'Expense'})),amt(t),
+            h('td',{},h('button',{class:'del',text:'Delete','aria-label':'Delete '+t.description,onclick:async()=>{ if(!confirm('Delete "'+t.description+'"?'))return;
+                await fetch(API+'/'+t.id,{method:'DELETE'}); delete amap[t.id]; store.set('amap',amap); toast('Transaction deleted'); load(); }})))));
+  }
+  document.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{const k=b.dataset.sort; sortDir=sortKey===k?-sortDir:1; sortKey=k; txTable();});
+  ['q','fc','ft'].forEach(id=>$(id).addEventListener('input',txTable));
+  $('csv').onclick=()=>{ const e=v=>'"'+String(v).replace(/"/g,'""')+'"';
+    const csv=['Date,Description,Category,Amount',...data.map(t=>[t.date,t.description,catOf(t),t.amount].map(e).join(','))].join('\n');
+    const a=h('a',{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'transactions.csv'}); a.click(); URL.revokeObjectURL(a.href); };
 
-$('csv').onclick = () => {
-  const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
-  const csv = ['Date,Description,Category,Amount', ...data.map(t => [t.date, t.description, catOf(t), t.amount].map(esc).join(','))].join('\n');
-  const a = h('a', {href: URL.createObjectURL(new Blob([csv], {type: 'text/csv'})), download: 'transactions.csv'}); a.click(); URL.revokeObjectURL(a.href);
-};
+  function accV(){
+    $('mergedBal').textContent=fmt(balance());
+    const un=data.filter(t=>!accounts.some(a=>a.id===amap[t.id])).reduce((s,t)=>s+Number(t.amount),0);
+    const cards=accounts.map(a=>{ const bal=Number(a.open)+data.filter(t=>amap[t.id]===a.id).reduce((s,t)=>s+Number(t.amount),0);
+      return h('div',{class:'card acc'},h('div',{class:'row'},h('span',{class:'badge b-OK',text:a.type}),h('button',{class:'del',text:'Remove',onclick:()=>{ if(!confirm('Remove "'+a.name+'"?'))return;
+          accounts=accounts.filter(x=>x.id!==a.id); store.set('accounts',accounts); renderAll(); }})),h('b',{class:'num',text:fmt(bal)}),h('span',{class:'mute',text:a.name})); });
+    if(data.length&&un) cards.push(h('div',{class:'card acc'},h('span',{class:'badge b-soon',text:'Unassigned'}),h('b',{class:'num',text:fmt(un)}),h('span',{class:'mute',text:'Transactions without an account'})));
+    $('accCards').replaceChildren(...(cards.length?cards:[h('p',{class:'empty',text:'No accounts yet. Add your first account.'})]));
+  }
+  $('addAcc').onclick=()=>form('New account',[{id:'name',label:'Account name',attrs:{required:'',placeholder:'Main checking'}},
+            {id:'type',label:'Type',options:[['Checking','Checking'],['Savings','Savings'],['Credit card','Credit card'],['Cash','Cash']]},{id:'open',label:'Opening balance',type:'number',value:'0',attrs:{step:'0.01'}}],
+          v=>{ if(!v.name){return false} accounts.push({id:uid(),name:v.name,type:v.type,open:parseFloat(v.open)||0}); store.set('accounts',accounts); renderAll(); toast('Account added'); });
 
-/* add dialog */
-function setType(s) { sign = s; $('bExp').setAttribute('aria-pressed', s < 0); $('bInc').setAttribute('aria-pressed', s > 0); }
-$('bExp').onclick = () => setType(-1); $('bInc').onclick = () => setType(1);
-document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => { $('form').reset(); setType(-1); $('date').valueAsDate = new Date(); $('dlg').showModal(); });
-$('cancel').onclick = () => $('dlg').close();
-$('form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const body = {date: $('date').value, description: $('description').value.trim(), amount: Math.abs(parseFloat($('amount').value)) * sign, category: $('category').value.trim()};
-  const res = await fetch(API, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
-  if (!res.ok) { toast('Could not save. Check the date, description and amount.'); return; }
-  $('dlg').close(); toast(sign < 0 ? 'Expense added' : 'Income added'); load();
-});
-enter();
+  function limV(){
+    const st=limits.map(l=>({l,s:limStatus(l)})), n=st.filter(x=>x.s.state!=='OK').length;
+    document.querySelectorAll('#nav .nb').forEach(e=>e.remove()); if(n)document.querySelector('#nav [data-v=limits]').append(h('span',{class:'nb',text:n}));
+    $('limCards').replaceChildren(...(st.length?st.map(({l,s})=>h('div',{class:'card'},h('div',{class:'row'},h('b',{text:l.category||'Overall spending'}),h('span',{class:'badge b-'+s.state,text:s.state==='OK'?'On track':s.state==='WARNING'?'Warning':'Exceeded'})),
+            h('div',{class:'meter '+s.state},h('span',{style:'width:'+Math.min(100,s.pct)+'%'})),h('div',{class:'row mute',style:'font-size:.85rem'},h('span',{class:'num',text:fmt(s.spent)+' of '+fmt(l.amount)}),h('span',{text:Math.round(s.pct)+'%'})),
+            h('div',{class:'row',style:'margin-top:8px'},h('span',{class:'mute',style:'font-size:.8rem',text:'Warns at '+l.warn+'%'}),h('button',{class:'del',text:'Remove',onclick:()=>{limits=limits.filter(x=>x.id!==l.id);store.set('limits',limits);renderAll();}})))):[h('p',{class:'empty',text:'No limits yet. Add one to get alerts.'})]));
+  }
+  $('addLim').onclick=()=>form('New spending limit',[{id:'category',label:'Category (leave blank for all spending)',attrs:{list:'cats',placeholder:'Food'}},
+            {id:'amount',label:'Monthly limit',type:'number',attrs:{min:'1',step:'0.01',required:''}},{id:'warn',label:'Warn at percent',type:'number',value:'80',attrs:{min:'1',max:'100'}}],
+          v=>{ const a=parseFloat(v.amount); if(!(a>0))return false; limits.push({id:uid(),category:v.category,amount:a,warn:Math.min(100,Math.max(1,parseInt(v.warn)||80))}); store.set('limits',limits); renderAll(); toast('Limit added'); });
+
+  function billV(){
+    $('billE').hidden=bills.length>0;
+    $('billRows').replaceChildren(...bills.map(b=>({b,i:billInfo(b)})).sort((a,c)=>a.i.days-c.i.days).map(({b,i})=>h('tr',{},h('td',{text:b.name}),h('td',{text:i.due.toLocaleDateString(undefined,{day:'numeric',month:'short'})}),
+            h('td',{},h('span',{class:'badge b-'+i.cls,text:i.label})),h('td',{class:'r num',text:fmt(b.amount)}),
+            h('td',{class:'r'},h('button',{class:'btn',style:'padding:4px 10px',text:i.paid?'Undo':'Mark paid',onclick:()=>{b.paid=i.paid?'':monthKey(new Date());store.set('bills',bills);renderAll();}}),
+                    h('button',{class:'del',text:'Remove',onclick:()=>{bills=bills.filter(x=>x.id!==b.id);store.set('bills',bills);renderAll();}})))));
+  }
+  $('addBill').onclick=()=>form('New bill',[{id:'name',label:'Bill name',attrs:{required:'',placeholder:'Electricity'}},{id:'amount',label:'Amount',type:'number',attrs:{min:'0.01',step:'0.01',required:''}},
+            {id:'day',label:'Due day of month',type:'number',value:'1',attrs:{min:'1',max:'31'}},{id:'remind',label:'Remind days before',type:'number',value:'3',attrs:{min:'0',max:'30'}}],
+          v=>{ const a=parseFloat(v.amount); if(!v.name||!(a>0))return false; bills.push({id:uid(),name:v.name,amount:a,day:Math.min(31,Math.max(1,parseInt(v.day)||1)),remind:parseInt(v.remind)||0,paid:''}); store.set('bills',bills); renderAll(); toast('Bill added'); });
+
+  function rep(){ const mo={}; data.forEach(t=>{const k=t.date.slice(0,7),o=mo[k]||(mo[k]={i:0,e:0}); t.amount>=0?o.i+=Number(t.amount):o.e+=Math.abs(t.amount);});
+    const r=Object.entries(mo).sort().reverse();
+    $('repMon').replaceChildren(...(r.length?r.map(([k,o])=>h('tr',{},h('td',{text:new Date(k+'-01T00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'})}),h('td',{class:'r num i',text:fmt(o.i)}),h('td',{class:'r num o',text:fmt(o.e)}),h('td',{class:'r num',text:fmt(o.i-o.e)}))):[h('tr',{},h('td',{colspan:4,class:'empty',text:'No data yet.'}))])); }
+
+  document.querySelectorAll('[data-addtx]').forEach(b=>b.onclick=()=>form('New transaction',[
+            {id:'sign',label:'Type',options:[['-1','Expense'],['1','Income']]},{id:'amount',label:'Amount',type:'number',attrs:{min:'0.01',step:'0.01',required:'',placeholder:'0.00'}},
+            {id:'description',label:'Description',attrs:{required:'',maxlength:'120'}},{id:'category',label:'Category',attrs:{list:'cats',placeholder:'Food'}},
+            {id:'date',label:'Date',type:'date',value:ymd(new Date())},{id:'account',label:'Account',options:[['','No account'],...accounts.map(a=>[a.id,a.name])]}],
+          async v=>{ const amount=Math.abs(parseFloat(v.amount))*Number(v.sign); if(!v.description||!v.date||!amount){toast('Check the amount, description and date.');return false}
+            const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:v.date,description:v.description,amount,category:v.category})});
+            if(!r.ok){toast('Could not save the transaction.');return false} const t=await r.json(); if(v.account){amap[t.id]=v.account;store.set('amap',amap)}
+            toast(amount<0?'Expense added':'Income added'); load(); }));
+  enter();
 </script>
 </body>
 </html>
